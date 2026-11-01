@@ -1,0 +1,554 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manualna terapia twarzy – Małgorzata Koza, Częstochowa</title>
+<meta name="description" content="Zapisz się na manualną terapię twarzy (90 min) w Częstochowie. Wypełnij krótki formularz – oddzwonimy, aby umówić termin.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#1c1511">
+<link rel="preload" as="image" href="img/tlo.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #ffffff;
+    --ink-soft: rgba(255, 255, 255, .78);
+    --line: rgba(255, 255, 255, .55);
+    --surface: rgba(255, 255, 255, .08);
+    --surface-hover: rgba(255, 255, 255, .16);
+    --accent: #d39a83;
+    --accent-dark: #b97c65;
+    --selected: rgba(201, 138, 113, .72);
+    --error: #ffb4a8;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: #1c1511;
+    color: var(--ink);
+    font-family: "Manrope", system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Zdjęcie w tle na cały ekran z przyciemnieniem (osobny element – background-attachment: fixed nie działa na iPhone) */
+  .bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(rgba(0, 0, 0, .55), rgba(0, 0, 0, .62)),
+      url("img/tlo.jpg") 58% center / cover no-repeat,
+      #1c1511;
+  }
+  .brand {
+    padding: 20px 24px 0;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 20px;
+    letter-spacing: .04em;
+    color: #fff;
+  }
+  .brand small {
+    display: block;
+    font-family: "Manrope", sans-serif;
+    font-size: 10px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+  }
+  main {
+    flex: 1;
+    width: 100%;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 28px 20px 120px;
+    text-shadow: 0 1px 12px rgba(0, 0, 0, .35);
+  }
+  @media (min-width: 900px) { main { padding-top: 6vh; } }
+  .step { animation: in .4s ease both; }
+  @keyframes in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+  .offer {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+    text-shadow: none;
+  }
+  .qnum { font-size: 15px; color: var(--ink-soft); margin-bottom: 6px; }
+  h1 {
+    font-family: "Manrope", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: clamp(24px, 4.2vw, 36px);
+    line-height: 1.3;
+    margin: 0 0 22px;
+  }
+  .hint { color: var(--ink-soft); font-size: 15px; margin: 0 0 14px; }
+  .req { color: var(--accent); }
+
+  /* Kafelki ze zdjęciami */
+  .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  @media (min-width: 640px) { .tiles { grid-template-columns: repeat(3, 1fr); gap: 16px; } }
+  .tile {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    text-align: left;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    text-shadow: none;
+    backdrop-filter: blur(2px);
+    transition: background .15s, border-color .15s, transform .15s;
+  }
+  .tile:hover { background: var(--surface-hover); transform: translateY(-2px); }
+  .tile .ph { aspect-ratio: 4 / 3; overflow: hidden; background: rgba(255,255,255,.1); }
+  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.04); }
+  .tile .lbl { display: flex; gap: 10px; align-items: center; padding: 10px 12px 12px; font-size: 14px; font-weight: 500; line-height: 1.35; }
+
+  /* Lista opcji */
+  .opts { display: grid; gap: 14px; max-width: 450px; }
+  .opt {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 16px 16px 18px;
+    cursor: pointer;
+    font: inherit;
+    font-size: 17px;
+    color: inherit;
+    text-align: left;
+    text-shadow: none;
+    backdrop-filter: blur(2px);
+    transition: background .15s, border-color .15s;
+  }
+  .opt:hover, .nav:not(:disabled):hover { background: var(--surface-hover); }
+  /* Litera A/B/C jako białe kółko po prawej, jak w SurveySparrow */
+  .key {
+    order: 2;
+    margin-left: auto;
+    flex: none;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: #fff;
+    color: #2a201b;
+    display: grid; place-items: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .sel { background: var(--selected) !important; border-color: #fff !important; box-shadow: 0 0 0 1px #fff; }
+  .sel .key { background: #fff; color: var(--accent-dark); }
+  .tile .check {
+    position: absolute; top: 10px; right: 10px;
+    width: 30px; height: 30px; border-radius: 50%;
+    background: var(--accent); color: #fff;
+    display: none; place-items: center; font-size: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  }
+  .tile.sel .check { display: grid; }
+
+  /* Pola tekstowe */
+  .field {
+    display: flex; align-items: center;
+    max-width: 520px;
+    border-bottom: 1px solid var(--line);
+    transition: border-color .15s;
+  }
+  .field:focus-within { border-color: #fff; }
+  .field input {
+    flex: 1; min-width: 0;
+    border: 0; background: transparent; outline: none;
+    font: inherit; font-size: 24px; color: #fff;
+    padding: 10px 0;
+  }
+  .field input::placeholder { color: rgba(255, 255, 255, .45); }
+  .prefix { font-size: 20px; padding-right: 10px; margin-right: 10px; border-right: 1px solid var(--line); white-space: nowrap; }
+  .consent {
+    display: flex; gap: 12px; align-items: flex-start;
+    max-width: 600px; margin-top: 28px;
+    font-size: 13px; color: var(--ink-soft); cursor: pointer;
+  }
+  .consent input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--accent); flex: none; }
+  .rodo { max-width: 600px; margin-top: 16px; font-size: 12px; color: var(--ink-soft); }
+  .rodo a { color: #fff; }
+
+  .err { color: var(--error); font-size: 14px; margin-top: 14px; min-height: 21px; }
+  .actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+  .btn {
+    background: #fff; color: #2a201b;
+    border: 0; border-radius: var(--radius);
+    font: inherit; font-weight: 700; font-size: 15px; letter-spacing: .05em;
+    padding: 14px 30px; cursor: pointer;
+    text-shadow: none;
+    transition: background .15s, opacity .15s;
+  }
+  .btn:hover { background: #f1e4dd; }
+  .btn:disabled { opacity: .6; cursor: default; }
+  .enter-hint { font-size: 12px; color: var(--ink-soft); }
+  @media (hover: none) { .enter-hint { display: none; } }
+
+  /* Pasek dolny */
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, .55));
+    padding: 18px 20px calc(14px + env(safe-area-inset-bottom));
+  }
+  .bar-in { max-width: 880px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+  .progress { flex: 1; height: 4px; background: rgba(255, 255, 255, .25); border-radius: 99px; overflow: hidden; }
+  .progress i { display: block; height: 100%; width: 0; background: #fff; transition: width .35s ease; }
+  .pct { font-size: 13px; font-weight: 600; color: #fff; width: 38px; text-align: right; }
+  .nav { width: 42px; height: 42px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: #fff; cursor: pointer; font-size: 16px; }
+  .nav:disabled { opacity: .35; cursor: default; }
+
+  .done { text-align: center; padding-top: 8vh; }
+  .done .icon { width: 76px; height: 76px; margin: 0 auto 18px; border-radius: 50%; background: #fff; color: var(--accent-dark); display: grid; place-items: center; font-size: 36px; text-shadow: none; }
+  .done p { color: var(--ink-soft); max-width: 480px; margin: 0 auto 10px; }
+  .done b { color: #fff; }
+  .msgr-box { margin: 34px auto 0; max-width: 520px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,.25); }
+  .done .msgr-text { color: #fff; font-size: 19px; font-weight: 600; line-height: 1.4; margin-bottom: 20px; }
+  .msgr {
+    display: inline-flex; align-items: center; gap: 12px;
+    background: #fff; color: #2a201b;
+    font-weight: 700; font-size: 17px; text-decoration: none;
+    padding: 16px 30px; border-radius: 99px;
+    text-shadow: none;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    animation: pulse 2.4s ease-in-out 1s infinite;
+    transition: transform .15s;
+  }
+  .msgr:hover { transform: scale(1.03); }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 0 rgba(255,255,255,.45); } 50% { box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 12px rgba(255,255,255,0); } }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+</style>
+</head>
+<body>
+
+<div class="bg" aria-hidden="true"></div>
+
+<div class="brand">
+  <small>Terapeutka Twarzy</small>
+  Małgorzata Koza
+</div>
+
+<main id="app" aria-live="polite"></main>
+
+<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1788840459088666&ev=PageView&noscript=1"></noscript>
+
+<!-- Pułapka na boty – ludzie tego pola nie widzą -->
+<div class="hp" aria-hidden="true"><input id="website" tabindex="-1" autocomplete="off"></div>
+
+<div class="bar" id="bar">
+  <div class="bar-in">
+    <div class="progress"><i id="progress"></i></div>
+    <span class="pct" id="pct">0%</span>
+    <button class="nav" id="prev" aria-label="Poprzednie pytanie">↑</button>
+    <button class="nav" id="next" aria-label="Następne pytanie">↓</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   KONFIGURACJA – uzupełnij przed publikacją
+   ========================================================= */
+const CONFIG = {
+  // Adres aplikacji Google Apps Script (instrukcja w INSTRUKCJA.md).
+  // Puste = tryb testowy: zgłoszenie trafia tylko do konsoli przeglądarki.
+  SCRIPT_URL: "https://script.google.com/macros/s/AKfycbyfhK81-ZLg5jA4Gwv5myBhOn1McV0VHdxS7fhd8DZ5aJa7CQjziTxM2stM3K-1l7EuoA/exec",
+  // ID Piksela Meta (opcjonalnie) – po wysłaniu formularza wysyła zdarzenie "Lead".
+  META_PIXEL_ID: "1788840459088666",
+  // Link do polityki prywatności (opcjonalnie, zalecane).
+  PRIVACY_URL: "https://docs.google.com/document/d/1DrH_q7jHOmiBzJt3adUUH_TXojJNXcJprZy5TSoZdc8/edit?usp=sharing",
+  // Link do Messengera z chatbotem (np. https://m.me/NazwaStrony?ref=formularz). Puste = przycisk ukryty.
+  MESSENGER_URL: "https://m.me/646620011866388?ref=formularz"
+};
+
+const STEPS = [
+  {
+    id: "obszary", type: "tiles", required: true, offer: true,
+    title: "Co najbardziej chciałabyś poprawić w wyglądzie swojej twarzy?",
+    hint: "Wybierz tyle, ile chcesz",
+    options: [
+      { v: "Bruzda nosowo-wargowa", label: "Zmarszczki – bruzdę nosowo-wargową", img: "img/bruzda.jpg" },
+      { v: "Lwia zmarszczka", label: "Lwią zmarszczkę", img: "img/lwia.jpg" },
+      { v: "Opadający owal twarzy", label: "Opadający owal twarzy", img: "img/owal.jpg" },
+      { v: "Worki i opuchlizna pod oczami", label: "Worki i opuchliznę pod oczami", img: "img/oczy.jpg" },
+      { v: "Podwójny podbródek", label: "Podwójny podbródek", img: "img/podbrodek.jpg" },
+      { v: "Kompleksowe odmłodzenie", label: "Chcę kompleksowo odmłodzić twarz", img: "img/metamorfoza.jpg" }
+    ]
+  },
+  {
+    id: "imie", type: "text", required: true,
+    title: "Jak masz na imię?",
+    placeholder: "Wpisz swoje imię", autocomplete: "given-name"
+  },
+  {
+    id: "dni", type: "multi", required: true,
+    title: "{imie}, jaki dzień jest dla Ciebie najbardziej odpowiedni, aby przyjść na wizytę wraz z konsultacją?",
+    hint: "Wybierz tyle, ile chcesz",
+    options: ["Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek"]
+  },
+  {
+    id: "godziny", type: "multi", required: true,
+    title: "Jaki przedział godzinowy wizyty najbardziej Ci odpowiada?",
+    hint: "Wybierz tyle, ile chcesz",
+    options: ["Rano (10:00–12:00)", "Po południu (12:00–16:00)", "Późne popołudnie (16:00–21:00)"]
+  },
+  {
+    id: "telefon", type: "phone", required: true,
+    title: "Następnie zadzwonimy do Ciebie w celu dokończenia procesu rejestracji. Jaki jest Twój numer telefonu?",
+    placeholder: "Numer telefonu"
+  },
+  {
+    id: "email", type: "email", required: true, last: true,
+    title: "Na podany przez Ciebie adres e-mail wyślemy potwierdzenie wysłania zgłoszenia",
+    placeholder: "Wpisz swój adres e-mail",
+    consent: "Wyrażam dobrowolną zgodę na przetwarzanie podanych przeze mnie danych osobowych przez Małgorzatę Kozę w celach marketingowych, w tym w celu realizacji usługi wysyłania Newslettera na podany przeze mnie adres e-mail."
+  }
+];
+
+/* ========================================================= */
+
+const app = document.getElementById("app");
+const answers = { obszary: [], dni: [], godziny: [], imie: "", telefon: "", email: "", zgoda: false };
+let current = 0;
+let sending = false;
+const startedAt = Date.now();
+
+// Źródło kampanii (UTM / fbclid) – zapamiętane na czas sesji
+const TRACK_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid"];
+const tracking = (() => {
+  const params = new URLSearchParams(location.search);
+  let saved = {};
+  try { saved = JSON.parse(sessionStorage.getItem("lead_tracking") || "{}"); } catch (e) {}
+  TRACK_KEYS.forEach(k => { if (params.get(k)) saved[k] = params.get(k); });
+  try { sessionStorage.setItem("lead_tracking", JSON.stringify(saved)); } catch (e) {}
+  return saved;
+})();
+
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const letter = i => String.fromCharCode(65 + i);
+const phoneDigits = () => answers.telefon.replace(/\D/g, "");
+
+function title(step) {
+  const name = answers.imie.trim();
+  let t = step.title;
+  if (t.includes("{imie}")) t = name ? t.replace("{imie}", name) : t.replace("{imie}, j", "J");
+  return t;
+}
+
+function validate(step) {
+  if (step.type === "tiles" || step.type === "multi") return answers[step.id].length ? "" : "Wybierz co najmniej jedną odpowiedź.";
+  if (step.type === "text") return answers.imie.trim().length >= 2 ? "" : "Wpisz swoje imię.";
+  if (step.type === "phone") return phoneDigits().length === 9 ? "" : "Podaj 9-cyfrowy numer telefonu.";
+  if (step.type === "email") return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(answers.email.trim()) ? "" : "Podaj poprawny adres e-mail.";
+  return "";
+}
+
+function render() {
+  const step = STEPS[current];
+  let body = "";
+
+  if (step.type === "tiles") {
+    body = `<div class="tiles">${step.options.map((o, i) => `
+      <button type="button" class="tile${answers[step.id].includes(o.v) ? " sel" : ""}" data-v="${esc(o.v)}" aria-pressed="${answers[step.id].includes(o.v)}">
+        <div class="ph"><img src="${o.img}" alt="${esc(o.label)}" loading="${i < 4 ? "eager" : "lazy"}"></div>
+        <span class="check">✓</span>
+        <span class="lbl"><span class="key">${letter(i)}</span>${esc(o.label)}</span>
+      </button>`).join("")}</div>`;
+  } else if (step.type === "multi") {
+    body = `<div class="opts">${step.options.map((o, i) => `
+      <button type="button" class="opt${answers[step.id].includes(o) ? " sel" : ""}" data-v="${esc(o)}" aria-pressed="${answers[step.id].includes(o)}">
+        <span class="key">${letter(i)}</span>${esc(o)}
+      </button>`).join("")}</div>`;
+  } else if (step.type === "text") {
+    body = `<div class="field"><input id="inp" type="text" placeholder="${step.placeholder}" autocomplete="${step.autocomplete}" value="${esc(answers.imie)}" maxlength="60"></div>`;
+  } else if (step.type === "phone") {
+    body = `<div class="field"><span class="prefix">🇵🇱 +48</span><input id="inp" type="tel" inputmode="tel" placeholder="${step.placeholder}" autocomplete="tel-national" value="${esc(answers.telefon)}" maxlength="15"></div>`;
+  } else if (step.type === "email") {
+    body = `<div class="field"><input id="inp" type="email" inputmode="email" placeholder="${step.placeholder}" autocomplete="email" value="${esc(answers.email)}" maxlength="120"></div>
+      <label class="consent"><input type="checkbox" id="zgoda"${answers.zgoda ? " checked" : ""}><span>${esc(step.consent)}</span></label>
+      <p class="rodo">Administratorem Twoich danych jest Małgorzata Koza. Imię, telefon i e-mail wykorzystamy, aby skontaktować się z Tobą w sprawie wizyty.${CONFIG.PRIVACY_URL ? ` <a href="${esc(CONFIG.PRIVACY_URL)}" target="_blank" rel="noopener">Polityka prywatności</a>` : ""}</p>`;
+  }
+
+  app.innerHTML = `<section class="step">
+    ${step.offer ? `<div class="offer">✦ Manualna terapia twarzy · 90 min · 280 zł</div>` : ""}
+    <div class="qnum">Pytanie ${current + 1} z ${STEPS.length}</div>
+    <h1>${esc(title(step))}${step.required ? ' <span class="req">*</span>' : ""}</h1>
+    ${step.hint ? `<p class="hint">${step.hint}</p>` : '<p class="hint"></p>'}
+    ${body}
+    <div class="err" id="err" role="alert"></div>
+    <div class="actions">
+      <button type="button" class="btn" id="go">${step.last ? "WYŚLIJ ZGŁOSZENIE" : "NASTĘPNE"}</button>
+      <span class="enter-hint">lub naciśnij <b>Enter ↵</b></span>
+    </div>
+  </section>`;
+
+  app.querySelectorAll("[data-v]").forEach(el => el.addEventListener("click", () => toggle(el.dataset.v)));
+  const inp = document.getElementById("inp");
+  if (inp) {
+    inp.addEventListener("input", () => {
+      if (step.type === "text") answers.imie = inp.value;
+      if (step.type === "phone") { inp.value = inp.value.replace(/[^\d ]/g, ""); answers.telefon = inp.value; }
+      if (step.type === "email") answers.email = inp.value;
+      document.getElementById("err").textContent = "";
+      updateBar();
+    });
+    if (window.matchMedia("(hover: hover)").matches) inp.focus();
+  }
+  const zgoda = document.getElementById("zgoda");
+  if (zgoda) zgoda.addEventListener("change", () => { answers.zgoda = zgoda.checked; });
+  document.getElementById("go").addEventListener("click", next);
+
+  updateBar();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function toggle(v) {
+  const list = answers[STEPS[current].id];
+  const i = list.indexOf(v);
+  i === -1 ? list.push(v) : list.splice(i, 1);
+  app.querySelectorAll("[data-v]").forEach(el => {
+    const on = list.includes(el.dataset.v);
+    el.classList.toggle("sel", on);
+    el.setAttribute("aria-pressed", on);
+  });
+  document.getElementById("err").textContent = "";
+  updateBar();
+}
+
+function updateBar() {
+  const answered = STEPS.filter(s => !validate(s)).length;
+  const pct = Math.round(answered / STEPS.length * 100);
+  document.getElementById("progress").style.width = pct + "%";
+  document.getElementById("pct").textContent = pct + "%";
+  document.getElementById("prev").disabled = current === 0;
+  document.getElementById("next").disabled = current === STEPS.length - 1;
+}
+
+function next() {
+  if (sending) return;
+  const step = STEPS[current];
+  const msg = validate(step);
+  if (msg) { document.getElementById("err").textContent = msg; return; }
+  if (step.last) return submit();
+  current++;
+  render();
+}
+
+function prev() {
+  if (current > 0) { current--; render(); }
+}
+
+async function submit() {
+  sending = true;
+  const btn = document.getElementById("go");
+  btn.disabled = true;
+  btn.textContent = "WYSYŁANIE…";
+
+  const payload = {
+    imie: answers.imie.trim(),
+    telefon: "+48 " + phoneDigits().replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3"),
+    email: answers.email.trim(),
+    obszary: answers.obszary,
+    dni: answers.dni,
+    godziny: answers.godziny,
+    zgoda: answers.zgoda,
+    czas_wypelniania_s: Math.round((Date.now() - startedAt) / 1000),
+    strona: location.origin + location.pathname,
+    website: document.getElementById("website").value,
+    ...tracking
+  };
+
+  try {
+    if (CONFIG.SCRIPT_URL) {
+      // text/plain = brak zapytania CORS preflight, które Apps Script odrzuca
+      await fetch(CONFIG.SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+    } else {
+      console.info("[TRYB TESTOWY] Zgłoszenie nie zostało wysłane – uzupełnij CONFIG.SCRIPT_URL.", payload);
+    }
+    if (window.fbq) fbq("track", "Lead");
+    done();
+  } catch (e) {
+    sending = false;
+    btn.disabled = false;
+    btn.textContent = "SPRÓBUJ PONOWNIE";
+    document.getElementById("err").textContent = "Nie udało się wysłać zgłoszenia. Sprawdź połączenie z internetem i spróbuj ponownie.";
+  }
+}
+
+function done() {
+  document.getElementById("progress").style.width = "100%";
+  document.getElementById("pct").textContent = "100%";
+  document.getElementById("bar").style.display = "none";
+  app.innerHTML = `<section class="step done">
+    <div class="icon">✓</div>
+    <h1>Dziękujemy${answers.imie.trim() ? ", " + esc(answers.imie.trim()) : ""}!</h1>
+    <p>Twoje zgłoszenie zostało przyjęte. Wkrótce zadzwonimy do Ciebie, aby ustalić dokładny termin wizyty.</p>
+    <p>Potwierdzenie wysłaliśmy na adres <b>${esc(answers.email.trim())}</b>.</p>
+    ${CONFIG.MESSENGER_URL ? `
+    <div class="msgr-box">
+      <p class="msgr-text">Kliknij „Wyślij wiadomość”, a prześlę Ci zdjęcia przed i po moich podopiecznych</p>
+      <a class="msgr" id="msgr" href="${esc(CONFIG.MESSENGER_URL)}">
+        <svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true">
+          <defs><linearGradient id="mg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#0866ff"/><stop offset=".6" stop-color="#a033ff"/><stop offset="1" stop-color="#ff5c87"/></linearGradient></defs>
+          <path fill="url(#mg)" d="M12 2C6.36 2 2 6.13 2 11.7c0 2.91 1.19 5.44 3.14 7.17.16.14.26.35.27.57l.05 1.78c.02.57.6.94 1.12.71l1.99-.88c.17-.07.36-.09.54-.04.91.25 1.88.39 2.89.39 5.64 0 10-4.13 10-9.7S17.64 2 12 2z"/>
+          <path fill="#fff" d="M6 14.54l2.94-4.66c.47-.74 1.47-.93 2.17-.4l2.34 1.75c.21.16.51.16.72 0l3.16-2.4c.42-.32.97.18.69.63l-2.94 4.66c-.47.74-1.47.93-2.17.4l-2.34-1.75a.6.6 0 0 0-.72 0l-3.16 2.4c-.42.32-.97-.18-.69-.63z"/>
+        </svg>
+        Wyślij do mnie wiadomość
+      </a>
+    </div>` : ""}
+  </section>`;
+  const msgr = document.getElementById("msgr");
+  if (msgr) msgr.addEventListener("click", () => { if (window.fbq) fbq("track", "Contact"); });
+}
+
+document.getElementById("prev").addEventListener("click", prev);
+document.getElementById("next").addEventListener("click", next);
+
+document.addEventListener("keydown", e => {
+  if (sending || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === "Enter" && !e.target.classList.contains("nav")) { e.preventDefault(); next(); return; }
+  const step = STEPS[current];
+  if ((step.type === "tiles" || step.type === "multi") && /^[a-z]$/i.test(e.key)) {
+    const opt = step.options[e.key.toUpperCase().charCodeAt(0) - 65];
+    if (opt) toggle(opt.v || opt);
+  }
+});
+
+// Piksel Meta (ładuje się tylko, gdy podasz ID)
+if (CONFIG.META_PIXEL_ID) {
+  !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+  n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+  document,'script','https://connect.facebook.net/en_US/fbevents.js');
+  fbq("init", CONFIG.META_PIXEL_ID);
+  fbq("track", "PageView");
+}
+
+render();
+</script>
+</body>
+</html>
