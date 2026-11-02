@@ -259,26 +259,68 @@
   /* Baner zgody na cookies */
   .cookies {
     position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 10;
-    max-width: 560px; margin: 0 auto;
-    background: rgba(28, 21, 17, .96);
+    max-width: 620px; margin: 0 auto;
+    background: rgba(28, 21, 17, .97);
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, .25);
     border-radius: 16px;
-    padding: 16px 18px;
+    padding: 18px 18px 16px;
     box-shadow: 0 16px 40px rgba(0, 0, 0, .45);
     animation: in .35s ease both;
   }
-  .cookies[hidden] { display: none; }
+  .cookies[hidden], .ck-modal[hidden] { display: none; }
+  .cookies h2, .ck-panel h2 { margin: 0 0 8px; font-size: 17px; font-weight: 700; color: #fff; }
   .cookies p { margin: 0 0 14px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
-  .cookies a { color: #fff; }
-  .cookies-btns { display: flex; gap: 10px; }
+  .cookies a, .ck-panel a, .rodo .ck-open { color: #fff; }
+  .cookies-btns { display: flex; flex-wrap: wrap; gap: 8px; }
   .cbtn {
-    flex: 1;
+    flex: 1 1 140px;
     font: inherit; font-size: 14px; font-weight: 700;
-    padding: 12px 16px; border-radius: var(--radius); cursor: pointer;
+    padding: 12px 14px; border-radius: var(--radius); cursor: pointer;
     background: transparent; color: #fff; border: 1px solid #fff;
   }
   .cbtn-ok { background: #fff; color: #2a201b; }
+
+  /* Panel „Spersonalizuj” */
+  .ck-modal {
+    position: fixed; inset: 0; z-index: 20;
+    background: rgba(0, 0, 0, .6);
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px;
+  }
+  .ck-panel {
+    position: relative;
+    width: 100%; max-width: 640px; max-height: 90vh; max-height: 90dvh;
+    overflow-y: auto; -webkit-overflow-scrolling: touch;
+    background: #1f1814; color: #fff;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 16px;
+    padding: 22px 18px 18px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .5);
+    text-shadow: none;
+  }
+  .ck-panel h2 { font-size: 19px; padding-right: 36px; }
+  .ck-close { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3); background: transparent; color: #fff; font-size: 20px; cursor: pointer; line-height: 1; }
+  .ck-intro { font-size: 13px; line-height: 1.55; color: var(--ink-soft); margin: 0 0 16px; }
+  .ck-cat { border-top: 1px solid rgba(255, 255, 255, .15); padding: 14px 0; }
+  .ck-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .ck-name { font-weight: 700; font-size: 15px; }
+  .ck-always { font-size: 12px; font-weight: 700; color: #7ed58f; white-space: nowrap; }
+  .ck-desc { font-size: 13px; line-height: 1.5; color: var(--ink-soft); margin: 6px 0 0; }
+  .ck-cat details { margin-top: 8px; font-size: 13px; }
+  .ck-cat summary { cursor: pointer; color: #fff; font-weight: 600; }
+  .ck-cookie { margin: 10px 0 0; padding: 10px 12px; background: rgba(255,255,255,.06); border-radius: 10px; line-height: 1.5; color: var(--ink-soft); }
+  .ck-cookie b { color: #fff; }
+  .ck-none { margin: 8px 0 0; color: var(--ink-soft); font-style: italic; }
+  .ck-panel .cookies-btns { margin-top: 14px; position: sticky; bottom: -18px; background: #1f1814; padding: 12px 0 4px; }
+  /* Przełącznik */
+  .switch { position: relative; flex: none; width: 46px; height: 26px; }
+  .switch input { position: absolute; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; z-index: 1; }
+  .switch span { position: absolute; inset: 0; border-radius: 99px; background: rgba(255,255,255,.25); transition: background .15s; }
+  .switch span::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform .15s; }
+  .switch input:checked + span { background: #31a24c; }
+  .switch input:checked + span::after { transform: translateX(20px); }
+  .switch input:focus-visible + span { outline: 2px solid #fff; outline-offset: 2px; }
 </style>
 </head>
 <body>
@@ -292,11 +334,27 @@
 
 <main id="app" aria-live="polite"></main>
 
-<div class="cookies" id="cookies" role="dialog" aria-label="Zgoda na pliki cookies" hidden>
-  <p>Ta strona używa plików cookies (Piksel Meta), aby mierzyć skuteczność reklam. Formularz działa tak samo, niezależnie od Twojej decyzji. <a id="cookies-privacy" href="#" target="_blank" rel="noopener">Polityka prywatności</a></p>
+<div class="cookies" id="cookies" role="dialog" aria-labelledby="ck-title" hidden>
+  <h2 id="ck-title">Cenimy prywatność użytkowników</h2>
+  <p>Używamy plików cookie, aby poprawić komfort przeglądania stron, wyświetlać spersonalizowane reklamy lub treści oraz analizować nasz ruch. Klikając „Zezwól na wszystkie”, wyrażasz zgodę na używanie przez nas plików cookie. <a class="ck-privacy" href="#" target="_blank" rel="noopener">Polityka prywatności</a></p>
   <div class="cookies-btns">
-    <button type="button" class="cbtn" id="cookies-deny">Odrzuć</button>
-    <button type="button" class="cbtn cbtn-ok" id="cookies-ok">Akceptuję</button>
+    <button type="button" class="cbtn" data-ck="customize">Spersonalizuj</button>
+    <button type="button" class="cbtn" data-ck="reject">Odrzuć wszystkie</button>
+    <button type="button" class="cbtn cbtn-ok" data-ck="accept">Zezwól na wszystkie</button>
+  </div>
+</div>
+
+<div class="ck-modal" id="ck-modal" hidden>
+  <div class="ck-panel" role="dialog" aria-modal="true" aria-labelledby="ck-m-title">
+    <button type="button" class="ck-close" data-ck="close" aria-label="Zamknij">×</button>
+    <h2 id="ck-m-title">Dostosuj preferencje dotyczące zgody</h2>
+    <p class="ck-intro">Używamy plików cookie, aby pomóc użytkownikom w sprawnej nawigacji i wykonywaniu określonych funkcji. Szczegółowe informacje na temat wszystkich plików cookie odpowiadających poszczególnym kategoriom zgody znajdują się poniżej. Pliki cookie sklasyfikowane jako „niezbędne” są przechowywane w przeglądarce użytkownika, ponieważ są niezbędne do włączenia podstawowych funkcji witryny. Korzystamy również z plików cookie innych firm, które pomagają nam analizować sposób korzystania ze strony przez użytkowników, a także przechowywać preferencje użytkownika oraz dostarczać mu istotnych dla niego treści i reklam. Tego typu pliki cookie będą przechowywane w przeglądarce tylko za uprzednią zgodą użytkownika. Można włączyć lub wyłączyć niektóre lub wszystkie te pliki cookie, ale wyłączenie niektórych z nich może wpłynąć na jakość przeglądania. <a class="ck-privacy" href="#" target="_blank" rel="noopener">Polityka prywatności</a></p>
+    <div id="ck-cats"></div>
+    <div class="cookies-btns">
+      <button type="button" class="cbtn" data-ck="reject">Odrzuć</button>
+      <button type="button" class="cbtn" data-ck="save">Zapisz moje preferencje</button>
+      <button type="button" class="cbtn cbtn-ok" data-ck="accept">Zezwól na wszystkie</button>
+    </div>
   </div>
 </div>
 
@@ -433,7 +491,7 @@ function render() {
   } else if (step.type === "email") {
     body = `<div class="field"><input id="inp" type="email" inputmode="email" placeholder="${step.placeholder}" autocomplete="email" value="${esc(answers.email)}" maxlength="120"></div>
       <label class="consent"><input type="checkbox" id="zgoda"${answers.zgoda ? " checked" : ""}><span>${esc(step.consent)}</span></label>
-      <p class="rodo">Administratorem Twoich danych jest Małgorzata Koza. Imię, telefon i e-mail wykorzystamy, aby skontaktować się z Tobą w sprawie wizyty.${CONFIG.PRIVACY_URL ? ` <a href="${esc(CONFIG.PRIVACY_URL)}" target="_blank" rel="noopener">Polityka prywatności</a>` : ""}</p>`;
+      <p class="rodo">Administratorem Twoich danych jest Małgorzata Koza. Imię, telefon i e-mail wykorzystamy, aby skontaktować się z Tobą w sprawie wizyty.${CONFIG.PRIVACY_URL ? ` <a href="${esc(CONFIG.PRIVACY_URL)}" target="_blank" rel="noopener">Polityka prywatności</a>` : ""} <a href="#" class="ck-open">Ustawienia cookies</a></p>`;
   }
 
   app.innerHTML = `<section class="step">
@@ -588,7 +646,8 @@ document.getElementById("next").addEventListener("click", next);
 
 document.addEventListener("keydown", e => {
   if (sending || e.ctrlKey || e.metaKey || e.altKey) return;
-  if (e.target.closest && e.target.closest(".cookies")) return;
+  if (e.target.closest && e.target.closest(".cookies, .ck-modal")) return;
+  if (!document.getElementById("ck-modal").hidden) return;
   if (e.key === "Enter" && !e.target.classList.contains("nav")) { e.preventDefault(); next(); return; }
   const step = STEPS[current];
   if ((step.type === "tiles" || step.type === "multi") && /^[a-z]$/i.test(e.key)) {
@@ -609,29 +668,137 @@ function loadPixel() {
   fbq("track", "PageView");
 }
 
+// Zgoda na cookies – kategorie i pliki cookie faktycznie używane na tej stronie
 const CONSENT_KEY = "cookie_consent";
-function getConsent() { try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; } }
-function setConsent(v) { try { localStorage.setItem(CONSENT_KEY, v); } catch (e) {} }
+const COOKIE_CATEGORIES = [
+  {
+    id: "niezbedne", name: "Niezbędne", always: true,
+    desc: "Niezbędne pliki cookie mają kluczowe znaczenie dla podstawowych funkcji witryny i witryna nie będzie działać w zamierzony sposób bez nich. Te pliki cookie nie przechowują żadnych danych umożliwiających identyfikację osoby.",
+    cookies: [
+      { name: "cookie_consent", period: "Do czasu usunięcia przez użytkownika", desc: "Zapamiętuje Twoje wybory dotyczące plików cookie (pamięć przeglądarki)." }
+    ]
+  },
+  {
+    id: "funkcjonalne", name: "Funkcjonalny",
+    desc: "Funkcjonalne pliki cookie pomagają wykonywać pewne funkcje, takie jak udostępnianie zawartości witryny na platformach mediów społecznościowych, zbieranie informacji zwrotnych i inne funkcje stron trzecich.",
+    cookies: []
+  },
+  {
+    id: "analityka", name: "Analityka",
+    desc: "Analityczne pliki cookie służą do zrozumienia, w jaki sposób użytkownicy wchodzą w interakcję z witryną. Te pliki cookie pomagają dostarczać informacje o metrykach liczby odwiedzających, współczynniku odrzuceń, źródle ruchu itp.",
+    cookies: []
+  },
+  {
+    id: "wydajnosc", name: "Wydajność",
+    desc: "Wydajnościowe pliki cookie służą do zrozumienia i analizy kluczowych wskaźników wydajności witryny, co pomaga zapewnić lepsze wrażenia użytkownika dla odwiedzających.",
+    cookies: []
+  },
+  {
+    id: "reklama", name: "Reklama",
+    desc: "Reklamowe pliki cookie służą do dostarczania użytkownikom spersonalizowanych reklam w oparciu o strony, które odwiedzili wcześniej, oraz do analizowania skuteczności kampanii reklamowej.",
+    cookies: [
+      { name: "_fbp", period: "3 miesiące", desc: "Meta (Facebook) – identyfikuje przeglądarkę, aby mierzyć skuteczność reklam i dopasowywać je do użytkownika." },
+      { name: "_fbc", period: "3 miesiące", desc: "Meta (Facebook) – zapisuje identyfikator kliknięcia reklamy, aby przypisać zgłoszenie do reklamy, z której przyszło." },
+      { name: "fr", period: "3 miesiące", desc: "Meta (facebook.com) – służy do wyświetlania, mierzenia i poprawiania trafności reklam." }
+    ]
+  },
+  {
+    id: "nieskategoryzowane", name: "Nieskategoryzowane", info: true,
+    desc: "Inne nieskategoryzowane pliki cookie to te, które są analizowane i nie zostały jeszcze zaklasyfikowane do żadnej kategorii.",
+    cookies: []
+  }
+];
+const OPTIONAL = COOKIE_CATEGORIES.filter(c => !c.always && !c.info).map(c => c.id);
 
-function showCookieBanner() {
-  const banner = document.getElementById("cookies");
-  const privacy = document.getElementById("cookies-privacy");
-  if (CONFIG.PRIVACY_URL) privacy.href = CONFIG.PRIVACY_URL; else privacy.remove();
-  banner.hidden = false;
-  const decide = granted => {
-    setConsent(granted ? "granted" : "denied");
-    banner.hidden = true;
-    if (granted) loadPixel();
-  };
-  document.getElementById("cookies-ok").addEventListener("click", () => decide(true));
-  document.getElementById("cookies-deny").addEventListener("click", () => decide(false));
+function getConsent() {
+  let raw = null;
+  try { raw = localStorage.getItem(CONSENT_KEY); } catch (e) {}
+  if (!raw) return null;
+  if (raw === "granted" || raw === "denied") {           // zapis ze starszej wersji banera
+    return Object.fromEntries(OPTIONAL.map(id => [id, raw === "granted"]));
+  }
+  try { return JSON.parse(raw); } catch (e) { return null; }
 }
 
-if (CONFIG.META_PIXEL_ID) {
+function applyConsent(consent) {
+  if (consent.reklama) {
+    loadPixel();
+    if (window.fbq) fbq("consent", "grant");
+  } else if (window.fbq) {
+    fbq("consent", "revoke");                              // zgoda cofnięta w trakcie wizyty
+  }
+}
+
+function saveConsent(consent) {
+  try { localStorage.setItem(CONSENT_KEY, JSON.stringify(consent)); } catch (e) {}
+  document.getElementById("cookies").hidden = true;
+  closeCookieSettings();
+  applyConsent(consent);
+}
+
+function renderCookieCategories() {
+  const current = getConsent() || {};
+  document.getElementById("ck-cats").innerHTML = COOKIE_CATEGORIES.map(c => `
+    <div class="ck-cat">
+      <div class="ck-head">
+        <span class="ck-name">${c.name}</span>
+        ${c.always ? '<span class="ck-always">Zawsze aktywne</span>'
+          : c.info ? ""
+          : `<label class="switch"><input type="checkbox" data-cat="${c.id}" aria-label="${c.name}"${current[c.id] ? " checked" : ""}><span></span></label>`}
+      </div>
+      <p class="ck-desc">${c.desc}</p>
+      ${c.info ? "" : `<details><summary>Pliki cookie (${c.cookies.length})</summary>${
+        c.cookies.length
+          ? c.cookies.map(k => `<div class="ck-cookie"><b>Plik cookie:</b> ${k.name}<br><b>Okres:</b> ${k.period}<br><b>Opis:</b> ${k.desc}</div>`).join("")
+          : '<p class="ck-none">Ta strona nie używa plików cookie z tej kategorii.</p>'
+      }</details>`}
+    </div>`).join("");
+}
+
+function openCookieSettings() {
+  renderCookieCategories();
+  document.getElementById("ck-modal").hidden = false;
+  document.body.style.overflow = "hidden";
+}
+
+function closeCookieSettings() {
+  document.getElementById("ck-modal").hidden = true;
+  document.body.style.overflow = "";
+}
+
+function initCookies() {
+  document.querySelectorAll(".ck-privacy").forEach(a => {
+    if (CONFIG.PRIVACY_URL) a.href = CONFIG.PRIVACY_URL; else a.remove();
+  });
+  document.addEventListener("click", e => {
+    if (e.target.closest(".ck-open")) { e.preventDefault(); openCookieSettings(); return; }
+    const btn = e.target.closest("[data-ck]");
+    if (!btn) return;
+    const action = btn.dataset.ck;
+    const all = value => Object.fromEntries(OPTIONAL.map(id => [id, value]));
+    if (action === "customize") openCookieSettings();
+    if (action === "close") closeCookieSettings();
+    if (action === "accept") saveConsent(all(true));
+    if (action === "reject") saveConsent(all(false));
+    if (action === "save") {
+      const chosen = all(false);
+      document.querySelectorAll("#ck-cats input[data-cat]").forEach(i => { chosen[i.dataset.cat] = i.checked; });
+      saveConsent(chosen);
+    }
+  });
+  document.getElementById("ck-modal").addEventListener("click", e => {
+    if (e.target.id === "ck-modal") closeCookieSettings();   // klik w tło zamyka panel
+  });
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && !document.getElementById("ck-modal").hidden) closeCookieSettings();
+  });
+
   const consent = getConsent();
-  if (consent === "granted") loadPixel();
-  else if (consent !== "denied") showCookieBanner();
+  if (consent) applyConsent(consent);
+  else document.getElementById("cookies").hidden = false;
 }
+
+initCookies();
 
 render();
 </script>
