@@ -255,6 +255,30 @@
   }
   @keyframes pulse { 0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 0 rgba(255,255,255,.45); } 50% { box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 12px rgba(255,255,255,0); } }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+  /* Baner zgody na cookies */
+  .cookies {
+    position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 10;
+    max-width: 560px; margin: 0 auto;
+    background: rgba(28, 21, 17, .96);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .45);
+    animation: in .35s ease both;
+  }
+  .cookies[hidden] { display: none; }
+  .cookies p { margin: 0 0 14px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+  .cookies a { color: #fff; }
+  .cookies-btns { display: flex; gap: 10px; }
+  .cbtn {
+    flex: 1;
+    font: inherit; font-size: 14px; font-weight: 700;
+    padding: 12px 16px; border-radius: var(--radius); cursor: pointer;
+    background: transparent; color: #fff; border: 1px solid #fff;
+  }
+  .cbtn-ok { background: #fff; color: #2a201b; }
 </style>
 </head>
 <body>
@@ -268,7 +292,13 @@
 
 <main id="app" aria-live="polite"></main>
 
-<noscript><img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=1788840459088666&ev=PageView&noscript=1"></noscript>
+<div class="cookies" id="cookies" role="dialog" aria-label="Zgoda na pliki cookies" hidden>
+  <p>Ta strona używa plików cookies (Piksel Meta), aby mierzyć skuteczność reklam. Formularz działa tak samo, niezależnie od Twojej decyzji. <a id="cookies-privacy" href="#" target="_blank" rel="noopener">Polityka prywatności</a></p>
+  <div class="cookies-btns">
+    <button type="button" class="cbtn" id="cookies-deny">Odrzuć</button>
+    <button type="button" class="cbtn cbtn-ok" id="cookies-ok">Akceptuję</button>
+  </div>
+</div>
 
 <!-- Pułapka na boty – ludzie tego pola nie widzą -->
 <div class="hp" aria-hidden="true"><input id="website" tabindex="-1" autocomplete="off"></div>
@@ -558,6 +588,7 @@ document.getElementById("next").addEventListener("click", next);
 
 document.addEventListener("keydown", e => {
   if (sending || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target.closest && e.target.closest(".cookies")) return;
   if (e.key === "Enter" && !e.target.classList.contains("nav")) { e.preventDefault(); next(); return; }
   const step = STEPS[current];
   if ((step.type === "tiles" || step.type === "multi") && /^[a-z]$/i.test(e.key)) {
@@ -566,8 +597,9 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// Piksel Meta (ładuje się tylko, gdy podasz ID)
-if (CONFIG.META_PIXEL_ID) {
+// Piksel Meta – ładuje się dopiero po zgodzie na cookies (RODO)
+function loadPixel() {
+  if (!CONFIG.META_PIXEL_ID || window.fbq) return;
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
   n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
   n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
@@ -575,6 +607,30 @@ if (CONFIG.META_PIXEL_ID) {
   document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq("init", CONFIG.META_PIXEL_ID);
   fbq("track", "PageView");
+}
+
+const CONSENT_KEY = "cookie_consent";
+function getConsent() { try { return localStorage.getItem(CONSENT_KEY); } catch (e) { return null; } }
+function setConsent(v) { try { localStorage.setItem(CONSENT_KEY, v); } catch (e) {} }
+
+function showCookieBanner() {
+  const banner = document.getElementById("cookies");
+  const privacy = document.getElementById("cookies-privacy");
+  if (CONFIG.PRIVACY_URL) privacy.href = CONFIG.PRIVACY_URL; else privacy.remove();
+  banner.hidden = false;
+  const decide = granted => {
+    setConsent(granted ? "granted" : "denied");
+    banner.hidden = true;
+    if (granted) loadPixel();
+  };
+  document.getElementById("cookies-ok").addEventListener("click", () => decide(true));
+  document.getElementById("cookies-deny").addEventListener("click", () => decide(false));
+}
+
+if (CONFIG.META_PIXEL_ID) {
+  const consent = getConsent();
+  if (consent === "granted") loadPixel();
+  else if (consent !== "denied") showCookieBanner();
 }
 
 render();
