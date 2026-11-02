@@ -84,10 +84,12 @@
     font-size: 13px;
     font-weight: 600;
     padding: 6px 14px;
-    border-radius: 99px;
+    border-radius: 18px;
+    line-height: 1.45;
     margin-bottom: 16px;
     text-shadow: none;
   }
+  .nowrap { white-space: nowrap; }
   .qnum { font-size: 15px; color: var(--ink-soft); margin-bottom: 6px; }
   h1 {
     font-family: "Manrope", system-ui, sans-serif;
@@ -405,7 +407,7 @@ function render() {
   }
 
   app.innerHTML = `<section class="step">
-    ${step.offer ? `<div class="offer">✦ Manualna Terapia Twarzy 90 min + Bezpłatna Konsultacja</div>` : ""}
+    ${step.offer ? `<div class="offer"><span>✦ Manualna Terapia Twarzy 90 min <span class="nowrap">+ Bezpłatna Konsultacja</span></span></div>` : ""}
     <div class="qnum">Pytanie ${current + 1} z ${STEPS.length}</div>
     <h1>${esc(title(step))}${step.required ? ' <span class="req">*</span>' : ""}</h1>
     ${step.hint ? `<p class="hint">${step.hint}</p>` : '<p class="hint"></p>'}
