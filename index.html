@@ -256,21 +256,22 @@
   @keyframes pulse { 0%, 100% { box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 0 rgba(255,255,255,.45); } 50% { box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 0 12px rgba(255,255,255,0); } }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
-  /* Baner zgody na cookies */
+  /* Baner zgody na cookies – cienki pasek na dole */
   .cookies {
-    position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 10;
-    max-width: 620px; margin: 0 auto;
-    background: rgba(28, 21, 17, .97);
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+    gap: 6px 14px;
+    background: rgba(20, 15, 12, .97);
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, .25);
-    border-radius: 16px;
-    padding: 18px 18px 16px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, .45);
-    animation: in .35s ease both;
+    border-top: 1px solid rgba(255, 255, 255, .2);
+    padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
+    text-shadow: none;
   }
   .cookies[hidden], .ck-modal[hidden] { display: none; }
-  .cookies h2, .ck-panel h2 { margin: 0 0 8px; font-size: 17px; font-weight: 700; color: #fff; }
-  .cookies p { margin: 0 0 14px; font-size: 13px; line-height: 1.5; color: var(--ink-soft); }
+  .ck-panel h2 { margin: 0 0 8px; font-size: 17px; font-weight: 700; color: #fff; }
+  .cookies p { margin: 0; font-size: 12px; line-height: 1.4; color: var(--ink-soft); text-align: center; }
+  .cookies .cookies-btns { flex-wrap: nowrap; gap: 6px; }
+  .cookies .cbtn { flex: 0 0 auto; font-size: 12px; padding: 7px 12px; border-radius: 8px; }
   .cookies a, .ck-panel a, .rodo .ck-open { color: #fff; }
   .cookies-btns { display: flex; flex-wrap: wrap; gap: 8px; }
   .cbtn {
@@ -334,9 +335,8 @@
 
 <main id="app" aria-live="polite"></main>
 
-<div class="cookies" id="cookies" role="dialog" aria-labelledby="ck-title" hidden>
-  <h2 id="ck-title">Cenimy prywatność użytkowników</h2>
-  <p>Używamy plików cookie, aby poprawić komfort przeglądania stron, wyświetlać spersonalizowane reklamy lub treści oraz analizować nasz ruch. Klikając „Zezwól na wszystkie”, wyrażasz zgodę na używanie przez nas plików cookie. <a class="ck-privacy" href="#" target="_blank" rel="noopener">Polityka prywatności</a></p>
+<div class="cookies" id="cookies" role="dialog" aria-label="Zgoda na pliki cookie" hidden>
+  <p>Używamy plików cookie do analizy ruchu i reklam. <a class="ck-privacy" href="#" target="_blank" rel="noopener">Polityka prywatności</a></p>
   <div class="cookies-btns">
     <button type="button" class="cbtn" data-ck="customize">Spersonalizuj</button>
     <button type="button" class="cbtn cbtn-ok" data-ck="accept">Zezwól na wszystkie</button>
