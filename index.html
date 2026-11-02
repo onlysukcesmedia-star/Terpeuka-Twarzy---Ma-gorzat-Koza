@@ -507,7 +507,17 @@ async function submit() {
     } else {
       console.info("[TRYB TESTOWY] Zgłoszenie nie zostało wysłane – uzupełnij CONFIG.SCRIPT_URL.", payload);
     }
-    if (window.fbq) fbq("track", "Lead");
+    if (window.fbq) {
+      // Zaawansowane dopasowanie: piksel sam haszuje te dane, dzięki czemu Meta lepiej przypisuje leady do reklam
+      fbq("init", CONFIG.META_PIXEL_ID, {
+        em: payload.email.toLowerCase(),
+        ph: "48" + phoneDigits(),
+        fn: payload.imie.toLowerCase(),
+        ct: "czestochowa",
+        country: "pl"
+      });
+      fbq("track", "Lead", { content_name: "Manualna terapia twarzy" });
+    }
     done();
   } catch (e) {
     sending = false;
