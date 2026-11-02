@@ -522,8 +522,8 @@ function done() {
   app.innerHTML = `<section class="step done">
     <div class="avatar"><img src="img/gosia.jpg" alt="Małgorzata Koza" width="104" height="104"><span class="online" aria-label="Dostępna"></span></div>
     <h1>Dziękuję${answers.imie.trim() ? ", " + esc(answers.imie.trim()) : ""}!</h1>
-    <p>Twoje zgłoszenie zostało przyjęte. Wkrótce zadzwonimy do Ciebie, aby ustalić dokładny termin wizyty.</p>
-    <p>Potwierdzenie wysłaliśmy na adres <b>${esc(answers.email.trim())}</b>.</p>
+    <p>Twoje zgłoszenie zostało przyjęte. Wkrótce zadzwonię do Ciebie, aby ustalić dokładny termin wizyty.</p>
+    <p>Potwierdzenie wysłałam na adres <b>${esc(answers.email.trim())}</b>.</p>
     ${CONFIG.MESSENGER_URL ? `
     <div class="msgr-box">
       <a class="msgr" id="msgr" href="${esc(CONFIG.MESSENGER_URL)}">
