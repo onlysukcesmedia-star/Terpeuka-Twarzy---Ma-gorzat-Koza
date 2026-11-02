@@ -405,7 +405,7 @@ function render() {
   }
 
   app.innerHTML = `<section class="step">
-    ${step.offer ? `<div class="offer">✦ Manualna terapia twarzy · 90 min · 280 zł</div>` : ""}
+    ${step.offer ? `<div class="offer">✦ Manualna Terapia Twarzy 90 min + Bezpłatna Konsultacja</div>` : ""}
     <div class="qnum">Pytanie ${current + 1} z ${STEPS.length}</div>
     <h1>${esc(title(step))}${step.required ? ' <span class="req">*</span>' : ""}</h1>
     ${step.hint ? `<p class="hint">${step.hint}</p>` : '<p class="hint"></p>'}
